@@ -4,7 +4,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   margin: 0;
   color: #eaeaea;
   min-width: 0;
@@ -12,7 +12,7 @@ body {
 
 .container {
   background-color: #181c2f;
-  padding: 10px 60px;
+  padding: 20px 30px;
   border-radius: 25px;
   box-shadow: 0 8px 24px rgba(35, 41, 70, 0.25);
   text-align: center;
@@ -23,6 +23,8 @@ body {
   max-width: 95vw;
   width: 100%;
   box-sizing: border-box;
+  max-height: 95vh;
+  overflow-y: auto;
 }
 
 .status {
