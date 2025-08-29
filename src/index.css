@@ -23,8 +23,7 @@ body {
   max-width: 95vw;
   width: 100%;
   box-sizing: border-box;
-  max-height: 95vh;
-  overflow-y: auto;
+  max-height: 90vh;
 }
 
 .status {
