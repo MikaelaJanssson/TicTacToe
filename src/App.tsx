@@ -20,14 +20,14 @@ export default function TicTacToe() {
 
   // alla olika vinstkombinationer (rader, kolumner och diagonaler)
   const winPatterns = [
-    [0, 1, 2], // första raden
-    [3, 4, 5], // andra raden
-    [6, 7, 8], // tredje raden
-    [0, 3, 6], // första kolumnen
-    [1, 4, 7], // andra kolumnen
-    [2, 5, 8], // tredje kolumnen
-    [0, 4, 8], // diagonal vänster-till-höger
-    [2, 4, 6], // diagonal höger-till-vänster
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
   ];
 
   // Funktion som kollar om någon har vunnit eller om spelet är oavgjort
