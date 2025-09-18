@@ -47,7 +47,6 @@ export default function Game() {
     return null;
   };
 
-  // När en spelare klickar på en ruta
   const handleClick = (index: number) => {
     if (board[index] !== null || winner) return; // Stoppa om rutan är upptagen eller spelet redan är slut
     const newBoard = [...board];
@@ -71,9 +70,9 @@ export default function Game() {
   // statusmeddelande
   const statusMessage = winner
     ? winner === "Tie"
-      ? "The game ended in a tie!"
-      : `🎉 ${winner} wins! 🎉`
-    : `Next turn: ${currentPlayer}`;
+      ? "Oavgjort!"
+      : `🎉 ${winner} vinner! 🎉`
+    : `Nästa spelare: ${currentPlayer}`;
 
   return (
     // Här skickar vi vidare all speldata till våra barn-komponenter via Context
