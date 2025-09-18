@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { GameContext } from "../context/GameContext";
 import Board from "./Board";
 import Status from "./Status";
 import ResetButton from "./ResetButton";
@@ -7,106 +7,82 @@ import ResetButton from "./ResetButton";
 type Player = "X" | "O";
 
 export default function Game() {
-  const size = 3;
+  const size = 3; //  brädet (3x3)
 
-  // board = array med 9 celler (för 3x3), varje cell kan vara "X", "O" eller null
+  // State: spelplanen
   const [board, setBoard] = useState<(Player | null)[]>(
     Array(size * size).fill(null)
   );
 
+  // State: vem som ska spela just nu
   const [currentPlayer, setCurrentPlayer] = useState<Player>("X");
 
-  // Vinnaren av spelet (kan vara "X", "O", "Tie" (oavgjort) eller null om spelet pågår)
+  // State: vinnaren (eller "Tie")
   const [winner, setWinner] = useState<Player | "Tie" | null>(null);
 
-  // Alla möjliga vinstmönster (rader, kolumner och diagonaler)
+  // Alla möjliga vinstmönster (rader, kolumner, diagonaler)
   const winPatterns = [
-    [0, 1, 2], // Rad 1
-    [3, 4, 5], // Rad 2
-    [6, 7, 8], // Rad 3
-    [0, 3, 6], // Kolumn 1
-    [1, 4, 7], // Kolumn 2
-    [2, 5, 8], // Kolumn 3
-    [0, 4, 8], // Diagonal \
-    [2, 4, 6], // Diagonal /
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
   ];
 
-  // Funktion som kollar om någon har vunnit eller om det är oavgjort
+  // Funktion som kollar om någon har vunnit
   const checkWinner = (newBoard: (Player | null)[]): Player | "Tie" | null => {
-    // Kolla först om "X" eller "O" har vunnit
     for (const player of ["X", "O"] as Player[]) {
       if (
         winPatterns.some((pattern) =>
           pattern.every((i) => newBoard[i] === player)
         )
       ) {
-        return player; // Returnera vinnaren om ett mönster stämmer
+        return player;
       }
     }
-
-    // Om alla celler är fyllda och ingen vann → oavgjort
-    if (newBoard.every((cell) => cell !== null)) return "Tie";
-
-    // Annars är spelet inte slut än
+    if (newBoard.every((cell) => cell !== null)) return "Tie"; // Oavgjort
     return null;
   };
 
-  // Funktion som körs när man klickar på en ruta
+  // När en spelare klickar på en ruta
   const handleClick = (index: number) => {
-    // Om rutan redan är fylld eller om spelet är slut → gör inget
-    if (board[index] !== null || winner) return;
-
-    // Skapa en kopia av brädet (man får inte ändra state direkt i React)
+    if (board[index] !== null || winner) return; // Stoppa om rutan är upptagen eller spelet redan är slut
     const newBoard = [...board];
-
-    // Sätt "X" eller "O" i den valda rutan
     newBoard[index] = currentPlayer;
-
-    // Kolla om någon har vunnit efter draget
-    const result = checkWinner(newBoard);
-
-    // Uppdatera brädet i state
-    setBoard(newBoard);
-
+    const result = checkWinner(newBoard); // Kolla om någon vann
+    setBoard(newBoard); // Uppdatera brädet
     if (result) {
-      // Om det finns en vinnare eller oavgjort → uppdatera winner
-      setWinner(result);
+      setWinner(result); // Om någon vann eller oavgjort - sätt vinnaren
     } else {
-      // Om spelet fortsätter → byt spelare
-      setCurrentPlayer(currentPlayer === "X" ? "O" : "X");
+      setCurrentPlayer(currentPlayer === "X" ? "O" : "X"); // Byt spelare
     }
   };
 
-  // Funktion för att starta om spelet
+  // Starta om spelet
   const resetGame = () => {
-    setBoard(Array(size * size).fill(null)); // Töm brädet
-    setCurrentPlayer("X"); // "X" börjar alltid
-    setWinner(null); // Ingen vinnare från början
+    setBoard(Array(size * size).fill(null));
+    setCurrentPlayer("X");
+    setWinner(null);
   };
 
-  // Statusmeddelandet som visas ovanför brädet
+  // statusmeddelande
   const statusMessage = winner
     ? winner === "Tie"
-      ? "Spelet slutade oavgjort!"
-      : `🎉 ${winner} vann! 🎉`
-    : `Nästa tur: ${currentPlayer}`;
+      ? "The game ended in a tie!"
+      : `🎉 ${winner} wins! 🎉`
+    : `Next turn: ${currentPlayer}`;
 
-  // Det som faktiskt visas på sidan
   return (
-    <>
-      {/* Knapp för att starta om spelet */}
-      <ResetButton onReset={resetGame} />
-
-      {/* Statusfält som visar tur eller vinnare */}
+    // Här skickar vi vidare all speldata till våra barn-komponenter via Context
+    <GameContext.Provider
+      value={{ board, currentPlayer, winner, handleClick, resetGame }}
+    >
+      <ResetButton />
       <Status message={statusMessage} />
-
-      {/* Själva spelbrädet (Board-komponenten) */}
-      <Board
-        board={board}
-        onCellClick={handleClick}
-        disabled={!!winner} // Lås brädet om spelet är slut
-        size={size}
-      />
-    </>
+      <Board size={size} />
+    </GameContext.Provider>
   );
 }
